@@ -50,8 +50,19 @@ namespace AGraph
 	SDL_Color getColor( std::string name );
 
 	// Render functions.
-	void render( std::string name, int x = 0, int y = 0, SDL_Rect *clip = nullptr );
-	void render( SDL_Texture *texture, int x = 0, int y = 0, SDL_Rect *clip = nullptr );
+	void render( std::string name, int x = 0, int y = 0, SDL_Rect *clip = nullptr, const double angle = 0.0f, const SDL_Point *centerRotate = nullptr );
+	void render( SDL_Texture *texture, int x = 0, int y = 0, SDL_Rect *clip = nullptr, const double angle = 0.0f, const SDL_Point *centerRotate = nullptr );
+
+	// Draws a filled rect. If no color is specified, it will be black by default.
+	void drawRect( int x, int y, int w, int h );
+	void drawRect( int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 );
+	void drawRect( SDL_Rect *rect );
+	void drawRect( SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 );
+
+	// Draws lines to the screen. The default color is black.
+	void drawLine( int x1, int y1, int x2, int y2 );
+	void drawLine( int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 );
+
 
 	// Call this function when done rendering to display to the screen.
 	void renderDone();

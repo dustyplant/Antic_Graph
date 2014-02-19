@@ -10,6 +10,9 @@ bool AGraph::initAGraph( std::string title, int width, int height )
 	if( renderer == nullptr )
 		return false;
 
+	if( SDL_SetRenderDrawBlendMode( AGraph::renderer, SDL_BLENDMODE_BLEND ) < 0 )
+		return false;
+
 	SDL_RenderClear( AGraph::renderer );
 
 	if( TTF_Init() == -1 )
@@ -73,7 +76,7 @@ bool AGraph::loadImage( std::string name, std::string path )
 	return loaded;
 }
 
-void AGraph::render( SDL_Texture *texture, int x, int y, SDL_Rect *clip )
+void AGraph::render( SDL_Texture *texture, int x, int y, SDL_Rect *clip, const double angle, const SDL_Point *centerRotate )
 {
 	static SDL_Rect pos;
 	pos.x = x;
@@ -86,7 +89,7 @@ void AGraph::render( SDL_Texture *texture, int x, int y, SDL_Rect *clip )
 	else
 		SDL_QueryTexture( texture, nullptr, nullptr, &pos.w, &pos.h );
 
-	SDL_RenderCopy( AGraph::renderer, texture, clip, &pos );
+	SDL_RenderCopyEx( AGraph::renderer, texture, clip, &pos, angle, centerRotate, SDL_FLIP_NONE );
 }
 
 void AGraph::renderDone()
@@ -95,9 +98,9 @@ void AGraph::renderDone()
 	SDL_RenderClear( AGraph::renderer );
 }
 
-void AGraph::render( std::string words, int x, int y, SDL_Rect *clip )
+void AGraph::render( std::string words, int x, int y, SDL_Rect *clip, const double angle, const SDL_Point *centerRotate )
 {
-	AGraph::render( getTexture( words ), x, y, clip );
+	AGraph::render( getTexture( words ), x, y, clip, angle, centerRotate );
 }
 
 SDL_Texture* AGraph::getTexture( std::string name )
@@ -177,4 +180,38 @@ SDL_Color AGraph::getColor( std::string name )
 void AGraph::getWindowSize( int &w, int &h )
 {
 	SDL_GetWindowSize( window, &w, &h );
+}
+
+
+void AGraph::drawRect( int x, int y, int w, int h )
+{
+	SDL_Rect tempRect = { x, y, w, h };
+	AGraph::drawRect( &tempRect );
+}
+void AGraph::drawRect( int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
+{
+	SDL_SetRenderDrawColor( AGraph::renderer, r, g, b, a );
+	AGraph::drawRect( x, y, w, h );
+	SDL_SetRenderDrawColor( AGraph::renderer, 0, 0, 0, 255 );
+}
+void AGraph::drawRect( SDL_Rect *rect )
+{
+	SDL_RenderFillRect( AGraph::renderer, rect );
+}
+void AGraph::drawRect( SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
+{
+	SDL_SetRenderDrawColor( AGraph::renderer, r, g, b, a );
+	AGraph::drawRect( rect );
+	SDL_SetRenderDrawColor( AGraph::renderer, 0, 0, 0, 255 );
+}
+
+void AGraph::drawLine( int x1, int y1, int x2, int y2 )
+{
+	SDL_RenderDrawLine( AGraph::renderer, x1, y1, x2, y2 );
+}
+void AGraph::drawLine( int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
+{
+	SDL_SetRenderDrawColor( AGraph::renderer, r, g, b, a );
+	AGraph::drawLine( x1, y1, x2, y2 );
+	SDL_SetRenderDrawColor( AGraph::renderer, 0, 0, 0, 255 );
 }
