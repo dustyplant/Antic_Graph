@@ -1,0 +1,22 @@
+{
+	// This is the name that the SpriteSheet object will be created with in the engine.
+	"name": "Test SpriteSheet Name",
+	"texture": [
+		{
+			// This is the name that the engine will use for the texture.
+			// Note: This isn't a local name. If you only want one of these textures, use the same name.
+			"name": "PlayerTexture",
+
+			// Path to the image that the Texture will be load from.
+			"path": "/path/to/texture.png"
+		},
+		{
+			"name": "TitoTex",
+			"path": "/path/to/titotex.png"
+		}
+	],
+	"sprites": [
+		[100, 125, 300, 400],
+		[123, 234, 431, 321]
+	]
+}

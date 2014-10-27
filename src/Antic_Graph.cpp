@@ -1,217 +1,222 @@
-#include <Antic_Graph.h>
+#include <Antic/Antic_Graph.h>
+#include <IL/il.h>
+#include <IL/ilu.h>
 
-bool AGraph::initAGraph( std::string title, int width, int height )
+#include <Antic/Texture.h>
+#include <Antic/Shader.h>
+#include <Antic/Sprite.h>
+
+#include <glm/gtc/type_ptr.hpp>
+
+#include <math.h>
+#include <stack>
+
+SDL_GLContext agraph::ctx;
+SDL_Window* agraph::window        = nullptr;
+glm::mat4 agraph::Model           = glm::mat4( 1.0f );
+glm::mat4 agraph::Projection      = glm::perspective( 45.0f, 4.0f/3.0f, 0.1f, 1000.f );
+glm::mat4 agraph::ProjectionOrtho = glm::ortho(0.f, 1024.f, 768.f, 0.f, -10.0f, 10.0f);
+glm::mat4 agraph::View            = glm::lookAt( glm::vec3(0,0,1), glm::vec3(0,0,0), glm::vec3(0,1,0) );
+
+std::stack<glm::mat4> matrixStack;
+
+GLuint screenWidth;
+GLuint screenHeight;
+
+bool agraph::initAGraph( std::string title, int width, int height )
 {
-	AGraph::window = SDL_CreateWindow( title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN );
+	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
+	{
+		printf("AGraph Error: Failed to initialize SDL2.\n");
+		return cleanup();
+	}
+	// Set the version of OpenGL to use as version 2.1.
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+
+	// Require hardware acceleration.
+	SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1);
+
+	// Set minimum buffer sizes.
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
+
+	// Create SDL2 Window
+	window = SDL_CreateWindow(
+		title.c_str(),
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		width,
+		height,
+		SDL_WINDOW_OPENGL
+	);
+
 	if( window == nullptr )
-		return false;
-
-	AGraph::renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-	if( renderer == nullptr )
-		return false;
-
-	if( SDL_SetRenderDrawBlendMode( AGraph::renderer, SDL_BLENDMODE_BLEND ) < 0 )
-		return false;
-
-	SDL_RenderClear( AGraph::renderer );
-
-	if( TTF_Init() == -1 )
-		return false;
-
-	return true;
-}
-
-void AGraph::cleanup()
-{
-	AGraph::clearTextureMap();
-	AGraph::clearFontMap();
-	AGraph::clearColorMap();
-
-	SDL_DestroyRenderer( AGraph::renderer );
-	SDL_DestroyWindow( AGraph::window );
-	TTF_Quit();
-	SDL_Quit();
-}
-
-void AGraph::clearTextureMap()
-{
-	for( std::map< std::string, SDL_Texture* >::iterator iter = AGraph::textureMap.begin(); iter != AGraph::textureMap.end(); iter++ )
 	{
-		SDL_DestroyTexture( iter->second );
+		printf("AGraph Error: Failed to create SDL2 window.\n");
+		return cleanup();
 	}
-	AGraph::textureMap.clear();
-}
 
-void AGraph::clearFontMap()
-{
-	for( std::map< std::string, TTF_Font* >::iterator iter = AGraph::fontMap.begin(); iter != AGraph::fontMap.end(); iter++ )
+	// Create OpenGL context
+	ctx = SDL_GL_CreateContext( window );
+
+	// Initialize GLEW and print any errors.
+	GLenum error = glewInit();
+	if( error != GLEW_OK )
 	{
-		TTF_CloseFont( iter->second );
+		printf("%s\n", glewGetErrorString(error));
+		return cleanup();
 	}
-	AGraph::fontMap.clear();
-}
 
-void AGraph::clearColorMap()
-{
-	AGraph::colorMap.clear();
-}
 
-SDL_Texture *AGraph::loadImage( std::string path )
-{
-	SDL_Texture *texture = nullptr;
-	texture = IMG_LoadTexture( AGraph::renderer, path.c_str() );
+	// Initialize OpenGL
+
+	// Set background color
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+
+	// Enable the third dimension
+	glEnable( GL_DEPTH_TEST );
+	glDepthFunc( GL_LEQUAL );
+	glDepthMask( GL_TRUE );
+
+	// Enable transparency
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+	// Enable 2D Textures
+	glEnable( GL_TEXTURE_2D );
+
+	// Initialize DevIL
+	ilInit();
+	iluInit();
+	ilClearColor( 255, 255, 255, 0 );
+
+	ILenum ilError = ilGetError();
+	if( ilError != IL_NO_ERROR )
+	{
+		printf("%s\n", iluErrorString(ilError));
+		return false;
+	}
+
+	screenWidth = width;
+	screenHeight = height;
+	setPerspective();
+
+	// Render the first frame so that the window opens as black.
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	renderDone();
 	
-	return texture;
-}
 
-bool AGraph::loadImage( std::string name, std::string path )
-{
-	bool loaded = false;
-	if( AGraph::textureMap[ name ] == nullptr )
-	{
-		AGraph::textureMap[ name ] = AGraph::loadImage( path );
-		if( AGraph::textureMap[ name ] != nullptr )
-			loaded = true;
-	}
-	return loaded;
-}
+	// Set up the camera
+	agraph::setCamera( glm::vec3(0.f,0.f,1.f), glm::vec3(0.f,0.f,0.f) );
+	agraph::setOrtho( (GLfloat)width, (GLfloat)height );
+	agraph::loadIdentityPerspective();
 
-void AGraph::render( SDL_Texture *texture, int x, int y, SDL_Rect *clip, const double angle, const SDL_Point *centerRotate )
-{
-	static SDL_Rect pos;
-	pos.x = x;
-	pos.y = y;
-
-	if( clip != nullptr ){
-		pos.w = clip->w;
-		pos.h = clip->h;
-	}
-	else
-		SDL_QueryTexture( texture, nullptr, nullptr, &pos.w, &pos.h );
-
-	SDL_RenderCopyEx( AGraph::renderer, texture, clip, &pos, angle, centerRotate, SDL_FLIP_NONE );
-}
-
-void AGraph::renderDone()
-{
-	SDL_RenderPresent( AGraph::renderer );
-	SDL_RenderClear( AGraph::renderer );
-}
-
-void AGraph::render( std::string words, int x, int y, SDL_Rect *clip, const double angle, const SDL_Point *centerRotate )
-{
-	AGraph::render( getTexture( words ), x, y, clip, angle, centerRotate );
-}
-
-SDL_Texture* AGraph::getTexture( std::string name )
-{
-	return AGraph::textureMap.at( name );
-}
-
-bool AGraph::loadFont( std::string name, std::string path, int fontSize )
-{
-	bool loaded = false;
-	if( AGraph::fontMap[ name ] == nullptr )
-	{		
-		AGraph::fontMap[ name ] = AGraph::loadFont( path, fontSize );
-		if( AGraph::fontMap[ name ] != nullptr )
-			loaded = true;
-	}
-	return loaded;
-}
-
-TTF_Font *AGraph::loadFont( std::string path, int fontSize )
-{
-	return TTF_OpenFont( path.c_str(), fontSize );
-}
-
-TTF_Font *AGraph::getFont( std::string name )
-{
-	return fontMap.at( name );
-}
-
-bool AGraph::loadWords( std::string name, std::string words, std::string fontName, std::string colorName )
-{
-	return AGraph::loadWords( name, words, getFont( fontName ), getColor( colorName ) );
-}
-
-bool AGraph::loadWords( std::string name, std::string words, TTF_Font* font, std::string colorName )
-{
-	return AGraph::loadWords( name, words, font, getColor( colorName ) );
-}
-
-
-bool AGraph::loadWords( std::string name, std::string words, std::string fontName, SDL_Color color )
-{
-	return AGraph::loadWords( name, words, getFont( fontName ), color );
-}
-
-bool AGraph::loadWords( std::string name, std::string words, TTF_Font* font, SDL_Color color )
-{
-	bool loaded = false;
-	if( AGraph::textureMap[ name ] == nullptr )
-	{
-		SDL_Surface *surface = TTF_RenderText_Blended( font, words.c_str(), color );
-		AGraph::textureMap[ name ] = SDL_CreateTextureFromSurface( renderer, surface );
-		if( AGraph::textureMap[ name ] != nullptr )
-			loaded = true;
-		SDL_FreeSurface( surface );
-	}
-	return loaded;
-}
-
-bool AGraph::loadColor( std::string name, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
-{
-	SDL_Color newColor = { r, g, b, a };
-	return loadColor( name, newColor );
-}
-
-bool AGraph::loadColor( std::string name, SDL_Color newColor )
-{
-	AGraph::colorMap[ name ] = newColor;
 	return true;
 }
 
-SDL_Color AGraph::getColor( std::string name )
+bool agraph::cleanup()
 {
-	return AGraph::colorMap.at( name );
+	// Closes the window.
+	if( window != nullptr )
+	{
+		SDL_GL_DeleteContext( ctx );
+		SDL_DestroyWindow( window );
+	}
+
+	agraph::TextureFactory::cleanup();
+	agraph::ShaderFactory::cleanup();
+	agraph::SpriteSheetFactory::cleanup();
+
+	// Closes SDL2.
+	SDL_Quit();
+
+	// This is just to clean up code.
+	return false;
 }
 
-void AGraph::getWindowSize( int &w, int &h )
+void agraph::renderDone()
 {
-	SDL_GetWindowSize( window, &w, &h );
+	SDL_GL_SwapWindow( window );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
-
-void AGraph::drawRect( int x, int y, int w, int h )
+void agraph::setCamera( glm::vec3 cameraLocation, glm::vec3 lookingAt, glm::vec3 up )
 {
-	SDL_Rect tempRect = { x, y, w, h };
-	AGraph::drawRect( &tempRect );
-}
-void AGraph::drawRect( int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
-{
-	SDL_SetRenderDrawColor( AGraph::renderer, r, g, b, a );
-	AGraph::drawRect( x, y, w, h );
-	SDL_SetRenderDrawColor( AGraph::renderer, 0, 0, 0, 255 );
-}
-void AGraph::drawRect( SDL_Rect *rect )
-{
-	SDL_RenderFillRect( AGraph::renderer, rect );
-}
-void AGraph::drawRect( SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
-{
-	SDL_SetRenderDrawColor( AGraph::renderer, r, g, b, a );
-	AGraph::drawRect( rect );
-	SDL_SetRenderDrawColor( AGraph::renderer, 0, 0, 0, 255 );
+	agraph::View = glm::lookAt( cameraLocation, lookingAt, up );
 }
 
-void AGraph::drawLine( int x1, int y1, int x2, int y2 )
+void agraph::setPerspective( GLfloat fov, GLfloat aspectRatio )
 {
-	SDL_RenderDrawLine( AGraph::renderer, x1, y1, x2, y2 );
+	//agraph::Projection = glm::perspective( (float)(fov * M_PI / 180.f), (GLfloat)getScreenWidth() / (GLfloat)getScreenHeight(), 0.1f, 1000.f );
+	agraph::Projection = glm::perspective( (float)(fov * M_PI / 180.f), aspectRatio, 0.1f, 1000.f );
 }
-void AGraph::drawLine( int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a )
+
+void agraph::setOrtho( GLfloat width, GLfloat height )
 {
-	SDL_SetRenderDrawColor( AGraph::renderer, r, g, b, a );
-	AGraph::drawLine( x1, y1, x2, y2 );
-	SDL_SetRenderDrawColor( AGraph::renderer, 0, 0, 0, 255 );
+	agraph::ProjectionOrtho = glm::ortho( 0.f, width, height, 0.f, -1.0f, 1.0f );
+}
+
+void agraph::scaleOrtho( GLfloat scaleX, GLfloat scaleY )
+{
+	int w,h;
+	SDL_GetWindowSize( agraph::window, &w, &h );
+	setOrtho( w * scaleX, h * scaleY );
+}
+
+void agraph::scale( GLfloat x, GLfloat y, GLfloat z )
+{
+	agraph::Model = glm::scale( agraph::Model, glm::vec3( x, y, z ) );
+}
+
+void agraph::translate( GLfloat x, GLfloat y, GLfloat z )
+{
+	agraph::Model = glm::translate( agraph::Model, glm::vec3(x,y,z) );
+}
+
+void agraph::rotate( GLfloat angle, GLfloat x, GLfloat y, GLfloat z )
+{
+	agraph::Model = glm::rotate( agraph::Model, (float)(angle * M_PI / 180.f), glm::vec3(x,y,z) );
+}
+
+void agraph::rotate2D( GLfloat angle )
+{
+	agraph::Model = glm::rotate( agraph::Model, (float)(angle * M_PI / 180.f), glm::vec3(0,0,1) );
+}
+
+void agraph::loadIdentityPerspective()
+{
+	agraph::Model = glm::mat4( 1.f );
+	agraph::Model = glm::scale( agraph::Model, glm::vec3( 1.f/(GLfloat)getScreenWidth(), 1.f/-(GLfloat)getScreenHeight(), 1.f) );
+}
+
+void agraph::loadIdentity()
+{
+	agraph::Model = glm::mat4( 1.f );
+}
+
+void agraph::pushMatrix()
+{
+	matrixStack.push( agraph::Model );
+}
+
+void agraph::popMatrix()
+{
+	if( matrixStack.empty() == false )
+	{
+		agraph::Model = matrixStack.top();
+		matrixStack.pop();
+	}
+}
+
+GLuint agraph::getScreenWidth()
+{
+	return screenWidth;
+}
+
+GLuint agraph::getScreenHeight()
+{
+	return screenHeight;
 }

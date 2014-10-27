@@ -1,0 +1,69 @@
+{
+	// Name of this animation. This is how it will be named in the engine.
+	"name": "Player",
+
+	// These sprites sheets will be loaded into the engine.
+	// They are dependencies for these animations and can be safely referenced here.
+	"spritesheet": [
+		{
+			// This is a local name. The engine will name the SpriteSheet object as
+			// described in the name in the SpriteSheet file.
+			"name": "Test SpriteSheet",
+
+			// Path to the SpriteSheet file.
+			"path": "/path/to/spritesheet.json"
+		},
+		{
+			"name": "Other SS",
+			"path": "/path/to/otherss.json"
+		}
+	],
+
+	// The actual animations are described here.
+	"animations": {
+		// This is an animation description. The name is "idle" for this specific animation.
+		"idle": {
+			// Frames index list.
+			"frames": [0,1,2,3],
+			// The SpriteSheet to take the indices from.
+			"spritesheet": "Other SS",
+
+			// Sets the animation to loop again once finished.
+			"loop": true,
+			// This is the default rate. The time to wait between animating each frame.
+			"rate": [0.0667]
+		},
+		"walk_right": {
+			// Frames list required.
+			"frames": [1,100],
+			// Sprite Sheet required.
+			"spritesheet": "Other SS",
+
+			// Whether or not to interpret frames list as a range or index list.
+			"range": true,
+			// If range is true, this sets how many indices to skip.
+			"step": 2,
+
+			// Defaults to false.
+			"loop": true
+		},
+		"walk_left": {
+			// Three ranges described
+			// 1..5, 6..10, 12..(end)
+			"frames": [1,5, 6,10, 12],
+			"range": true,
+			"spritesheet": "Other SS"
+		},
+		"jump": {
+			"spritesheet": "Test SpriteSheet",
+			"frames": [4,5,6],
+
+			// You can set the rate to switch between each frame.
+			// 		Start  ->  4  ->  5  ->  6  ->  Finish
+			"rate": 	  [0,   0.125,   0.5,   0.1],
+
+			// Gives the name of the animaiton to play once finished.
+			"next": "idle",
+		}
+	}
+}
