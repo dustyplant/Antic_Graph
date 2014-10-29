@@ -127,13 +127,16 @@ namespace agraph {
 	void loadIdentityPerspective();
 
 	/**
-	 * @brief Sets the camera.
+	 * @brief Sets the camera. The default values set the camera to have the origin in the top left corner.
 	 * 
 	 * @param cameraLocation The location of the camera in space.
 	 * @param lookingAt The point that the camera is looking towards.
 	 * @param up The vector describing which way is up. For most cases just use the default.
 	 */
-	void setCamera( glm::vec3 cameraLocation, glm::vec3 lookingAt, glm::vec3 up=glm::vec3(0,1,0) );
+	void setCamera( glm::vec3 cameraLocation = glm::vec3(0.5,-0.5,0.865), glm::vec3 lookingAt = glm::vec3(0.5,-0.5,0), glm::vec3 up=glm::vec3(0,1,0) );
+
+	// TODO: This
+	// void translateCameraFlat( GLfloat x, GLfloat y, GLfloat z = 0.f );
 
 	/**
 	 * @brief Sets the width and height of the orthographic matrix.

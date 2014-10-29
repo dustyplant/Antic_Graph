@@ -79,12 +79,14 @@ bool agraph::Texture::init( std::string texturePath )
 			// This determines what happens when the texture is scaled.
 			// GL_LINEAR gets the average of the 4 closest pixels to approximate the proper color.
 			// GL_NEAREST just picks the closest pixel to that location and uses that. Not particularly faster. Not worth using.
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST );
 
 			// This describes what is drawn if the image is too large.
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+			
+			glGenerateMipmap( GL_TEXTURE_2D );
 		}
 
 		// Free the DevIL image id. The data is now stored in textureID and we no longer need imageID.
@@ -207,7 +209,11 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 	GLuint TextureSamplerID = glGetUniformLocation( programID, "textureSampler" );
 
 	//glm::mat4 MVP = agraph::ProjectionOrtho * agraph::View * agraph::Model;
+	agraph::pushMatrix();
+	agraph::translate( x, y );
+
 	glm::mat4 MVP = agraph::Projection * agraph::View * agraph::Model;
+	agraph::popMatrix();
 
 	// Pass the MVP matrix data to the shaders.
 	glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0] );

@@ -14,9 +14,9 @@
 SDL_GLContext agraph::ctx;
 SDL_Window* agraph::window        = nullptr;
 glm::mat4 agraph::Model           = glm::mat4( 1.0f );
-glm::mat4 agraph::Projection      = glm::perspective( 45.0f, 4.0f/3.0f, 0.1f, 1000.f );
-glm::mat4 agraph::ProjectionOrtho = glm::ortho(0.f, 1024.f, 768.f, 0.f, -10.0f, 10.0f);
-glm::mat4 agraph::View            = glm::lookAt( glm::vec3(0,0,1), glm::vec3(0,0,0), glm::vec3(0,1,0) );
+glm::mat4 agraph::Projection;
+glm::mat4 agraph::ProjectionOrtho;
+glm::mat4 agraph::View;
 
 std::stack<glm::mat4> matrixStack;
 
@@ -110,7 +110,7 @@ bool agraph::initAGraph( std::string title, int width, int height )
 	
 
 	// Set up the camera
-	agraph::setCamera( glm::vec3(0.f,0.f,1.f), glm::vec3(0.f,0.f,0.f) );
+	agraph::setCamera();
 	agraph::setOrtho( (GLfloat)width, (GLfloat)height );
 	agraph::loadIdentityPerspective();
 

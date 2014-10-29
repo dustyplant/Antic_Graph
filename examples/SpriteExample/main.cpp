@@ -5,7 +5,7 @@
 
 int main( int argc, char* argv[] )
 {
-	if( agraph::initAGraph("Sprite Example", 1024, 768) == false )
+	if( agraph::initAGraph("Sprite Example", 800, 600) == false )
 		exit( EXIT_FAILURE );
 
 	// Loads the topdown texture using the TextureFactory static class.
@@ -27,7 +27,8 @@ int main( int argc, char* argv[] )
 				quit = true;
 
 		// Renders the sprite at the given x,y location.
-		sprite->render( 100.0f, 100.0f );
+		sprite->render( 800.0f-54, 600.0f-95 );
+		sprite->render();
 
 		// Renders the frame to the screen.
 		agraph::renderDone();
