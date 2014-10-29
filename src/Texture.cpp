@@ -212,7 +212,7 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 	agraph::pushMatrix();
 	agraph::translate( x, y );
 
-	glm::mat4 MVP = agraph::Projection * agraph::View * agraph::Model;
+	glm::mat4 MVP = agraph::Projection * agraph::View * agraph::ModelScale * agraph::Model;
 	agraph::popMatrix();
 
 	// Pass the MVP matrix data to the shaders.

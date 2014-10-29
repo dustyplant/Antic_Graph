@@ -18,12 +18,10 @@ int main( int argc, char *argv[] )
 
 	// The starting and ending sprite locations for the Elisa running animation.
 	int startingSprite = 5;
-	int endingSprite = 12;
+	int endingSprite   = 12;
 	
 	// Holds the current index of the sprite sheet for the animation of Elisa running.
 	int index = startingSprite-1;
-
-	agraph::setCamera( glm::vec3(0,0,1), glm::vec3(0,0,0));
 
 	bool quit = false;
 	SDL_Event event;

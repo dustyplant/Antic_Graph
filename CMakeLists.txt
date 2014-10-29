@@ -6,6 +6,9 @@ set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -g --std=c++11 " )
 
 include_directories( ${CMAKE_SOURCE_DIR}/include )
 
+# Include the RapidJSON header library.
+include_directories( ${CMAKE_SOURCE_DIR}/submodules/rapidjson/include )
+
 # So that the examples and tests can link to the Antic_Graph library once it is made.
 set( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 link_directories( ${PROJECT_BINARY_DIR}/lib )
@@ -33,11 +36,17 @@ endif( UNIX )
 # set( AGRAPH_LIBRARIES_COMMON GL GLU SDL2 )
 set( AGRAPH_LIBRARIES_COMMON GL GLU )
 
+
+# Add in the submodules.
+add_subdirectory( ${CMAKE_SOURCE_DIR}/submodules )
+
+
 # Finds SDL2 library.
 include(FindPkgConfig)
 PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
 include_directories( ${SDL2_INCLUDE_DIRS} )
 set( AGRAPH_LIBRARIES_COMMON ${AGRAPH_LIBRARIES_COMMON} ${SDL2_LIBRARIES} )
+
 
 # Finds the DevIL (Developer Image Library) library.
 find_package( DevIL REQUIRED )
@@ -46,8 +55,12 @@ if( IL_FOUND )
 	set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} )
 endif( IL_FOUND )
 
+
+
+
 # Links the libraries into the project.
 target_link_libraries( Antic_Graph ${AGRAPH_LIBRARIES} ${AGRAPH_LIBRARIES_COMMON} )
+
 
 # Adds the libraries together with the newly linked Antic_Graph library. Used to compile the examples and tests.
 set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES} Antic_Graph ${AGRAPH_LIBRARIES_COMMON} )

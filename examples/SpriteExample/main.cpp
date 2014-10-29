@@ -18,6 +18,8 @@ int main( int argc, char* argv[] )
 	// Define a sprite manually. This must be deallocated manually.
 	agraph::Sprite* sprite = new agraph::Sprite(tex, 42, 22, 54, 95);
 
+	agraph::Rect clipData = sprite->getClipData();
+
 	SDL_Event event;
 	bool quit = false;
 	while( quit == false )
@@ -27,7 +29,7 @@ int main( int argc, char* argv[] )
 				quit = true;
 
 		// Renders the sprite at the given x,y location.
-		sprite->render( 800.0f-54, 600.0f-95 );
+		sprite->render( agraph::getScreenWidth() - clipData.w, agraph::getScreenHeight() - clipData.h );
 		sprite->render();
 
 		// Renders the frame to the screen.

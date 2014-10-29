@@ -31,6 +31,7 @@ namespace agraph {
 
 	/// Model Matrix
 	extern glm::mat4 Model;
+	extern glm::mat4 ModelScale;
 
 
 	/**

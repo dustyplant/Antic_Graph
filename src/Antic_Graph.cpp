@@ -14,6 +14,7 @@
 SDL_GLContext agraph::ctx;
 SDL_Window* agraph::window        = nullptr;
 glm::mat4 agraph::Model           = glm::mat4( 1.0f );
+glm::mat4 agraph::ModelScale 	  = glm::mat4( 1.0f );
 glm::mat4 agraph::Projection;
 glm::mat4 agraph::ProjectionOrtho;
 glm::mat4 agraph::View;
@@ -188,8 +189,8 @@ void agraph::rotate2D( GLfloat angle )
 
 void agraph::loadIdentityPerspective()
 {
-	agraph::Model = glm::mat4( 1.f );
-	agraph::Model = glm::scale( agraph::Model, glm::vec3( 1.f/(GLfloat)getScreenWidth(), 1.f/-(GLfloat)getScreenHeight(), 1.f) );
+	agraph::Model      = glm::mat4( 1.f );
+	agraph::ModelScale = glm::scale( glm::mat4(1.f), glm::vec3( 1.f/(GLfloat)getScreenWidth(), 1.f/-(GLfloat)getScreenHeight(), 1.f) );
 }
 
 void agraph::loadIdentity()
