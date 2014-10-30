@@ -85,10 +85,9 @@ namespace agraph
 		 * 
 		 * @param vertexShaderSource The source string of the vertex shader source code.
 		 * @param fragmentShaderSource The source string of the fragment shader source code.
-		 * @param saveShader Whether or not to save the Shader object to be deallocated upon ShaderFactory's cleanup function call. Defaults to true.
 		 * @return A pointer to the Shader object that was just loaded.
 		 */
-		static Shader* loadShadersString( const std::string &vertexShaderSource, const std::string &fragmentShaderSource, bool saveShader = true );
+		static Shader* loadShadersString( const std::string &vertexShaderSource, const std::string &fragmentShaderSource );
 
 		/**
 		 * @brief Loads a shader program from two source strings as opposed to two files. This version does take a name.
@@ -106,10 +105,9 @@ namespace agraph
 		 * 
 		 * @param vertexFile The path to the file containing the vertex shader source code.
 		 * @param fragmentFile The path to the file containing the fragment shader source code.
-		 * @param saveShader Whether or not to save the Shader object to be deallocated upon ShaderFactory's cleanup function call. Defaults to true.
 		 * @return A pointer to the Shader object that was just loaded.
 		 */
-		static Shader* loadShaders( const std::string &vertexFile, const std::string &fragmentFile, bool saveShader = true );
+		static Shader* loadShaders( const std::string &vertexFile, const std::string &fragmentFile );
 
 		/**
 		 * @brief Loads a shader program from two files as opposed to two source strings. This version takes a name.

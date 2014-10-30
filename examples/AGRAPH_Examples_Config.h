@@ -1,0 +1,1 @@
+#define AGRAPH_RES_PATH "@AGRAPH_RES_PATH@"

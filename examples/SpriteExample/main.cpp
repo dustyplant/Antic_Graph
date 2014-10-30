@@ -2,6 +2,7 @@
 #include <Antic/Texture.h>
 #include <Antic/Shader.h>
 #include <Antic/Sprite.h>
+#include <AGRAPH_Examples_Config.h>
 
 int main( int argc, char* argv[] )
 {
@@ -9,7 +10,7 @@ int main( int argc, char* argv[] )
 		exit( EXIT_FAILURE );
 
 	// Loads the topdown texture using the TextureFactory static class.
-	agraph::Texture* tex = agraph::TextureFactory::loadTexture("topdown", "../../../res/topdown-sheet3.png");
+	agraph::Texture* tex = agraph::TextureFactory::loadTexture("topdown", std::string(AGRAPH_RES_PATH) + "topdown-sheet3.png");
 	
 	// Checks to make sure that the texture loaded.
 	if( tex == nullptr )

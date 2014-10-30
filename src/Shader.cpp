@@ -104,7 +104,7 @@ std::string agraph::ShaderFactory::getFileSource( const std::string &filePath )
     return shaderCode;
 }
 
-agraph::Shader* agraph::ShaderFactory::loadShadersString( const std::string &vertexShaderSource, const std::string &fragmentShaderSource, bool saveShader )
+agraph::Shader* agraph::ShaderFactory::loadShadersString( const std::string &vertexShaderSource, const std::string &fragmentShaderSource )
 {
 	GLuint vertexShaderID = loadShaderSingle( GL_VERTEX_SHADER, vertexShaderSource );
 	GLuint fragmentShaderID = loadShaderSingle( GL_FRAGMENT_SHADER, fragmentShaderSource );
@@ -119,34 +119,20 @@ agraph::Shader* agraph::ShaderFactory::loadShadersString( const std::string &ver
 	{
 		shader = new agraph::Shader;
 		shader->setProgramID( programID );
-		if( saveShader )
-			shaderList.push_back( shader );
 	}
 
 	return shader;
 }
 
-agraph::Shader* agraph::ShaderFactory::loadShaders( const std::string &vertexFile, const std::string &fragmentFile, bool saveShader )
+agraph::Shader* agraph::ShaderFactory::loadShaders( const std::string &vertexFile, const std::string &fragmentFile )
 {
-	//GLuint programID = loadShadersString( getFileSource(vertexFile), getFileSource(fragmentFile) );
-	agraph::Shader* shader = loadShadersString( getFileSource(vertexFile), getFileSource(fragmentFile), false );
-
-	// Checks if already added the programID into the list for deallocation.
-	// Might have been made in the loadShadersString function.
-	if( saveShader &&
-		shaderList.empty() == false &&
-		std::find(shaderList.begin(), shaderList.end(), shader) == shaderList.end() )
-	{
-		shaderList.push_back( shader );
-	}
-
-	return shader;
+	return loadShadersString( getFileSource(vertexFile), getFileSource(fragmentFile) );
 }
 
 agraph::Shader* agraph::ShaderFactory::loadShadersString( const std::string &name, const std::string &vertexShaderSource, const std::string &fragmentShaderSource )
 {
 	if( shaderDict.find(name) == shaderDict.end() )
-		shaderDict[ name ] = loadShadersString( vertexShaderSource, fragmentShaderSource, false );
+		shaderDict[ name ] = loadShadersString( vertexShaderSource, fragmentShaderSource );
 
 	return shaderDict[ name ];
 }

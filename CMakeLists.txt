@@ -2,34 +2,54 @@ cmake_minimum_required( VERSION 3.0 )
 project( Antic_Graph )
 
 # Flags for C++11 and for better debugging output.
-set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -g --std=c++11 " )
+set( CMAKE_CXX_FLAGS " -g --std=c++11 " )
 
-include_directories( ${CMAKE_SOURCE_DIR}/include )
+# Copy the resource files to the build directory so that the pathing works.
+# configure_file( ${PROJECT_SOURCE_DIR}/res/elisa-spritesheet1.png 	${PROJECT_BINARY_DIR}/res/elisa-spritesheet1.png 	COPYONLY )
+# configure_file( ${PROJECT_SOURCE_DIR}/res/exterior-parallaxBG1.png 	${PROJECT_BINARY_DIR}/res/exterior-parallaxBG1.png 	COPYONLY )
+# configure_file( ${PROJECT_SOURCE_DIR}/res/topdown-sheet3.png 		${PROJECT_BINARY_DIR}/res/topdown-sheet3.png 		COPYONLY )
+
+set( AGRAPH_RES_PATH "${PROJECT_SOURCE_DIR}/res/" CACHE STRING "Path to the Antic_Graph res folder." )
+
+set( AGRAPH_INCLUDE_DIRS 
+	# The base Antic_Graph include directory to find header files.
+	${PROJECT_SOURCE_DIR}/include
+
+	# Include the RapidJSON header library.
+	${PROJECT_SOURCE_DIR}/submodules/rapidjson/include
+
+	CACHE STRING "Antic_Graph include directories"
+)
+
+#include_directories( ${PROJECT_SOURCE_DIR}/include )
 
 # Include the RapidJSON header library.
-include_directories( ${CMAKE_SOURCE_DIR}/submodules/rapidjson/include )
+#include_directories( ${PROJECT_SOURCE_DIR}/submodules/rapidjson/include )
+
+# Addes all the include directories at once.
+include_directories( ${AGRAPH_INCLUDE_DIRS} )
 
 # So that the examples and tests can link to the Antic_Graph library once it is made.
 set( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 link_directories( ${PROJECT_BINARY_DIR}/lib )
-link_directories( ${CMAKE_SOURCE_DIR}/lib )
+link_directories( ${PROJECT_SOURCE_DIR}/lib )
 
 # Compile and link the static Antic_Graph library.
 add_library( Antic_Graph STATIC
-	${CMAKE_SOURCE_DIR}/src/Antic_Graph.cpp
-	${CMAKE_SOURCE_DIR}/src/Texture.cpp
-	${CMAKE_SOURCE_DIR}/src/Shader.cpp
-	${CMAKE_SOURCE_DIR}/src/Sprite.cpp
+	${PROJECT_SOURCE_DIR}/src/Antic_Graph.cpp
+	${PROJECT_SOURCE_DIR}/src/Texture.cpp
+	${PROJECT_SOURCE_DIR}/src/Shader.cpp
+	${PROJECT_SOURCE_DIR}/src/Sprite.cpp
 )
 
 
 # Set up the libraries to be linked to for examples and tests.
 if( WIN32 )
-	set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES} mingw32 glew32 SDL2main )
+	set( AGRAPH_LIBRARIES_BASE ${AGRAPH_LIBRARIES_BASE} mingw32 glew32 SDL2main )
 endif( WIN32 )
 
 if( UNIX )
-	set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES} GLEW )
+	set( AGRAPH_LIBRARIES_BASE ${AGRAPH_LIBRARIES_BASE} GLEW )
 endif( UNIX )
 
 
@@ -38,7 +58,7 @@ set( AGRAPH_LIBRARIES_COMMON GL GLU )
 
 
 # Add in the submodules.
-add_subdirectory( ${CMAKE_SOURCE_DIR}/submodules )
+add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules )
 
 
 # Finds SDL2 library.
@@ -52,18 +72,18 @@ set( AGRAPH_LIBRARIES_COMMON ${AGRAPH_LIBRARIES_COMMON} ${SDL2_LIBRARIES} )
 find_package( DevIL REQUIRED )
 if( IL_FOUND )
 	include_directories( ${IL_INCLUDE_DIR} )
-	set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} )
+	set( AGRAPH_LIBRARIES_BASE ${AGRAPH_LIBRARIES_BASE} ${IL_LIBRARIES} ${ILU_LIBRARIES} )
 endif( IL_FOUND )
 
 
 
 
 # Links the libraries into the project.
-target_link_libraries( Antic_Graph ${AGRAPH_LIBRARIES} ${AGRAPH_LIBRARIES_COMMON} )
+target_link_libraries( Antic_Graph ${AGRAPH_LIBRARIES_BASE} ${AGRAPH_LIBRARIES_COMMON} )
 
 
 # Adds the libraries together with the newly linked Antic_Graph library. Used to compile the examples and tests.
-set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES} Antic_Graph ${AGRAPH_LIBRARIES_COMMON} )
+set( AGRAPH_LIBRARIES ${AGRAPH_LIBRARIES_BASE} Antic_Graph ${AGRAPH_LIBRARIES_COMMON} CACHE STRING "Antic_Graph link libraries" )
 
 # Addes the examples to be compiled by CMake.
 add_subdirectory( examples )

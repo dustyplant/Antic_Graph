@@ -3,6 +3,7 @@
 #include <Antic/Sprite.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <AGRAPH_Examples_Config.h>
 
 int main( int argc, char *argv[] )
 {
@@ -11,7 +12,7 @@ int main( int argc, char *argv[] )
 		exit( EXIT_FAILURE );
 
 	// Loads the Transforming texture. This is the skyscraper picture.
-	agraph::Texture* tex = agraph::TextureFactory::loadTexture("Transforming", "../../../res/exterior-parallaxBG1.png");
+	agraph::Texture* tex = agraph::TextureFactory::loadTexture("Transforming", std::string(AGRAPH_RES_PATH) + "exterior-parallaxBG1.png");
 
 	// Loads the sprite sheet of Elisa.
 	agraph::SpriteSheet* elisa = agraph::SpriteSheetFactory::loadSS("Elisa.json");
