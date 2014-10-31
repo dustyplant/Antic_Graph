@@ -2,7 +2,7 @@
 	"name": "Elisa",
 	"texture": {
 		"name": "Elisa",
-		"path": "../../../res/elisa-spritesheet1.png"
+		"path": "res/elisa-spritesheet1.png"
 	},
 	"sprites": [
 		[3,3,56,56],
