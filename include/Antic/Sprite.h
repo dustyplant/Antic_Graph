@@ -49,7 +49,7 @@ namespace agraph
 		virtual std::vector< Sprite* > getSprites();
 		virtual Sprite* getSprite( int index );
 		
-		virtual void render( int index );
+		virtual void render( int index, GLfloat x = 0, GLfloat y = 0, Shader* shader = nullptr );
 		virtual void cleanup();
 
 	protected:

@@ -129,9 +129,9 @@ bool agraph::SpriteSheet::init( agraph::Texture* texture, std::vector< agraph::R
 	return true;
 }
 
-void agraph::SpriteSheet::render( int index )
+void agraph::SpriteSheet::render( int index, GLfloat x, GLfloat y, Shader* shader )
 {
-	getSprites()[ index ]->render();
+	getSprites()[ index ]->render( x, y, shader );
 }
 
 void agraph::SpriteSheet::cleanup()
