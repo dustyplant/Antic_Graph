@@ -165,29 +165,29 @@ agraph::Sprite* agraph::SpriteSheet::getSprite( int index )
 /// SpriteSheetFixed ///
 ////////////////////////
 
-void agraph::SpriteSheetFixed::generateSprites( agraph::Texture* tex, GLuint tileWidth, GLuint tileHeight, GLint marginX, GLint marginY, GLuint startOffsetX, GLuint startOffsetY )
+void agraph::SpriteSheetFixed::generateSprites( agraph::Texture* tex, GLuint tileWidth, GLuint tileHeight, GLint spacingX, GLint spacingY, GLuint startOffsetX, GLuint startOffsetY )
 {
 	cleanup();
 
 	this->tileWidth    = tileWidth;
 	this->tileHeight   = tileHeight;
-	this->marginX      = marginX;
-	this->marginY      = marginY;
+	this->spacingX      = spacingX;
+	this->spacingY      = spacingY;
 	this->startOffsetX = startOffsetX;
 	this->startOffsetY = startOffsetY;
 
 	GLuint texWidth  = tex->getWidth();
 	GLuint texHeight = tex->getHeight();
-	int columns = ( texWidth  - startOffsetX ) / (GLfloat)( getTileWidth()  + marginX );
-	int rows    = ( texHeight - startOffsetY ) / (GLfloat)( getTileHeight() + marginY );
+	int columns = ( texWidth  - startOffsetX ) / (GLfloat)( getTileWidth()  + spacingX );
+	int rows    = ( texHeight - startOffsetY ) / (GLfloat)( getTileHeight() + spacingY );
 	for( int j = 0; j < rows; ++j )
 	{
 		for( int i = 0; i < columns; ++i )
 		{
 			sprites.push_back(new Sprite(
 				tex,
-				i * tileWidth  + i * marginX + startOffsetX,
-				j * tileHeight + j * marginY + startOffsetY,	
+				i * tileWidth  + i * spacingX + startOffsetX,
+				j * tileHeight + j * spacingY + startOffsetY,	
 				getTileWidth(),
 				getTileHeight()
 			));
@@ -205,14 +205,14 @@ GLuint agraph::SpriteSheetFixed::getTileHeight()
 	return this->tileHeight;
 }
 
-GLint  agraph::SpriteSheetFixed::getMarginX()
+GLint  agraph::SpriteSheetFixed::getSpacingX()
 {
-	return this->marginX;
+	return this->spacingX;
 }
 
-GLint  agraph::SpriteSheetFixed::getMarginY()
+GLint  agraph::SpriteSheetFixed::getSpacingY()
 {
-	return this->marginY;
+	return this->spacingY;
 }
 
 GLuint agraph::SpriteSheetFixed::getStartOffsetX()
@@ -286,15 +286,15 @@ agraph::SpriteSheet* agraph::SpriteSheetFactory::loadSS( std::string spriteSheet
 			tileWidth  = sprites["tileWidth"].GetInt();
 			tileHeight = sprites["tileHeight"].GetInt();			
 			
-			GLint  marginX=0, marginY=0;
-			if( sprites.HasMember("marginX") && sprites.HasMember("marginY") )
+			GLint  spacingX=0, spacingY=0;
+			if( sprites.HasMember("spacingX") && sprites.HasMember("spacingY") )
 			{
-				marginX = sprites["marginX"].GetInt();
-				marginY = sprites["marginY"].GetInt();
+				spacingX = sprites["spacingX"].GetInt();
+				spacingY = sprites["spacingY"].GetInt();
 			}
 			
 			agraph::SpriteSheetFixed* ssf = new agraph::SpriteSheetFixed;
-			ssf->generateSprites( tex, tileWidth, tileHeight, marginX, marginY );
+			ssf->generateSprites( tex, tileWidth, tileHeight, spacingX, spacingY );
 			spriteSheet = ssf;
 		}
 	}
@@ -302,6 +302,14 @@ agraph::SpriteSheet* agraph::SpriteSheetFactory::loadSS( std::string spriteSheet
 	delete doc;
 
 	return spriteSheet;
+}
+
+agraph::SpriteSheet* agraph::SpriteSheetFactory::addSS( std::string ssName, agraph::SpriteSheet* ss )
+{
+	if( getSS( ssName ) == nullptr )
+		ssDict[ ssName ] = ss;
+
+	return getSS( ssName );
 }
 
 agraph::SpriteSheet* agraph::SpriteSheetFactory::getSS( std::string ssName )

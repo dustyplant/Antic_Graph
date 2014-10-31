@@ -62,11 +62,11 @@ namespace agraph
 	class SpriteSheetFixed: public SpriteSheet
 	{
 	public:
-		virtual void generateSprites( Texture* tex, GLuint tileWidth, GLuint tileHeight, GLint marginX = 0, GLint marginY = 0, GLuint startOffsetX = 0, GLuint startOffsetY = 0 );
+		virtual void generateSprites( Texture* tex, GLuint tileWidth, GLuint tileHeight, GLint spacingX = 0, GLint spacingY = 0, GLuint startOffsetX = 0, GLuint startOffsetY = 0 );
 		virtual GLuint getTileWidth();
 		virtual GLuint getTileHeight();
-		virtual GLint  getMarginX();
-		virtual GLint  getMarginY();
+		virtual GLint  getSpacingX();
+		virtual GLint  getSpacingY();
 		virtual GLuint getStartOffsetX();
 		virtual GLuint getStartOffsetY();
 
@@ -74,8 +74,8 @@ namespace agraph
 		GLuint tileWidth  = 16;
 		GLuint tileHeight = 16;
 
-		GLint  marginX = 0;
-		GLint  marginY = 0;
+		GLint  spacingX = 0;
+		GLint  spacingY = 0;
 
 		GLuint startOffsetX = 0;
 		GLuint startOffsetY = 0;
@@ -90,6 +90,7 @@ namespace agraph
 	{
 	public:
 		static SpriteSheet* loadSS( std::string spriteSheetPath );
+		static SpriteSheet* addSS( std::string ssName, SpriteSheet* ss );
 		static SpriteSheet* getSS( std::string ssName );
 		static void freeSS( std::string name );
 		static void cleanup();
