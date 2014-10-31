@@ -44,17 +44,41 @@ namespace agraph
 	{
 	public:
 		virtual ~SpriteSheet();
-		virtual bool init( std::string spriteSheetPath );
-		virtual bool init( Texture* texture, const std::vector< Rect > &clipData );
+		virtual bool init( Texture* texture, std::vector< Rect > &clipData );
 		virtual Texture* getTexture();
 		virtual std::vector< Sprite* > getSprites();
 		virtual Sprite* getSprite( int index );
+		
 		virtual void render( int index );
 		virtual void cleanup();
 
 	protected:
+
 		std::vector< Sprite* > sprites;
 		Texture* texture;
+
+	};
+
+	class SpriteSheetFixed: public SpriteSheet
+	{
+	public:
+		virtual void generateSprites( Texture* tex, GLuint tileWidth, GLuint tileHeight, GLint marginX = 0, GLint marginY = 0, GLuint startOffsetX = 0, GLuint startOffsetY = 0 );
+		virtual GLuint getTileWidth();
+		virtual GLuint getTileHeight();
+		virtual GLint  getMarginX();
+		virtual GLint  getMarginY();
+		virtual GLuint getStartOffsetX();
+		virtual GLuint getStartOffsetY();
+
+	protected:
+		GLuint tileWidth  = 16;
+		GLuint tileHeight = 16;
+
+		GLint  marginX = 0;
+		GLint  marginY = 0;
+
+		GLuint startOffsetX = 0;
+		GLuint startOffsetY = 0;
 	};
 
 

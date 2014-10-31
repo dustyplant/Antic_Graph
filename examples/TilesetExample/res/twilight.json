@@ -1,0 +1,13 @@
+{
+	"name": "twilight",
+	"texture": {
+		"name": "twilight",
+		"path": "res/twilight-tiles.png"
+	},
+	"sprites": {
+		"tileWidth": 	16,
+		"tileHeight": 	16,
+		"marginX": 		 0,
+		"marginY": 		 0
+	}
+}

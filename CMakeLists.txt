@@ -4,11 +4,6 @@ project( Antic_Graph )
 # Flags for C++11 and for better debugging output.
 set( CMAKE_CXX_FLAGS " -g --std=c++11 " )
 
-# Copy the resource files to the build directory so that the pathing works.
-# configure_file( ${PROJECT_SOURCE_DIR}/res/elisa-spritesheet1.png 	${PROJECT_BINARY_DIR}/res/elisa-spritesheet1.png 	COPYONLY )
-# configure_file( ${PROJECT_SOURCE_DIR}/res/exterior-parallaxBG1.png 	${PROJECT_BINARY_DIR}/res/exterior-parallaxBG1.png 	COPYONLY )
-# configure_file( ${PROJECT_SOURCE_DIR}/res/topdown-sheet3.png 		${PROJECT_BINARY_DIR}/res/topdown-sheet3.png 		COPYONLY )
-
 set( AGRAPH_RES_PATH "${PROJECT_SOURCE_DIR}/res/" CACHE STRING "Path to the Antic_Graph res folder." )
 
 set( AGRAPH_INCLUDE_DIRS 
@@ -21,11 +16,6 @@ set( AGRAPH_INCLUDE_DIRS
 	CACHE STRING "Antic_Graph include directories"
 )
 
-#include_directories( ${PROJECT_SOURCE_DIR}/include )
-
-# Include the RapidJSON header library.
-#include_directories( ${PROJECT_SOURCE_DIR}/submodules/rapidjson/include )
-
 # Addes all the include directories at once.
 include_directories( ${AGRAPH_INCLUDE_DIRS} )
 
@@ -37,6 +27,7 @@ link_directories( ${PROJECT_SOURCE_DIR}/lib )
 # Compile and link the static Antic_Graph library.
 add_library( Antic_Graph STATIC
 	${PROJECT_SOURCE_DIR}/src/Antic_Graph.cpp
+	${PROJECT_SOURCE_DIR}/src/JSONUtils.cpp
 	${PROJECT_SOURCE_DIR}/src/Texture.cpp
 	${PROJECT_SOURCE_DIR}/src/Shader.cpp
 	${PROJECT_SOURCE_DIR}/src/Sprite.cpp

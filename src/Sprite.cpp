@@ -1,16 +1,8 @@
 #include <Antic/Sprite.h>
-
-#include <rapidjson/reader.h>
-#include <rapidjson/filereadstream.h>
-#include <rapidjson/error/en.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/document.h>
-
+#include <Antic/JSONUtils.h>
 #include <iostream>
 #include <vector>
-#include <cctype>
-#include <sstream>
-#include <fstream>
+
 
 std::map< std::string, agraph::SpriteSheet* > agraph::SpriteSheetFactory::ssDict;
 
@@ -129,62 +121,11 @@ agraph::SpriteSheet::~SpriteSheet()
 	cleanup();
 }
 
-bool agraph::SpriteSheet::init( std::string spriteSheetPath )
+bool agraph::SpriteSheet::init( agraph::Texture* texture, std::vector< agraph::Rect > &clipData )
 {
-	cleanup();
+	for( int i = 0; i < clipData.size(); ++i )
+		sprites.push_back( new agraph::Sprite( texture, clipData[i] ) );
 
-	std::stringstream ss;
-	std::ifstream ifs;
-	ifs.open( spriteSheetPath.c_str(), std::ios::binary );
-	if( ifs.is_open() == false )
-	{
-		printf("AGraph Error: Failed to open SpriteSheet at %s.\n", spriteSheetPath.c_str());
-		ifs.close();
-		return false;
-	}
-
-	ss << ifs.rdbuf();
-	ifs.close();
-
-	rapidjson::Document doc;
-	if( doc.Parse<0>(ss.str().c_str()).HasParseError() )
-	{
-		printf("AGraph Error: Parse error.\n");
-		return false;
-	}
-
-	rapidjson::Value &name = doc["name"];
-	rapidjson::Value &texture = doc["texture"];
-	std::string texName = texture["name"].GetString();
-
-	agraph::Texture* tex = agraph::TextureFactory::loadTexture( texName, texture["path"].GetString() );
-	if( tex == nullptr )
-	{
-		printf("AGraph Error: Failed to load texture %s from SpriteSheet %s", texName.c_str(), name.GetString());
-		return false;
-	}
-
-	rapidjson::Value &sprites = doc["sprites"];
-	for( rapidjson::SizeType i = 0; i < sprites.Size(); ++i )
-	{
-		const rapidjson::Value &sprite = sprites[i];
-
-		agraph::Sprite* tempSprite = new agraph::Sprite(
-			tex,
-			(GLfloat)sprite[rapidjson::SizeType(0)].GetInt(),
-			(GLfloat)sprite[rapidjson::SizeType(1)].GetInt(),
-			(GLfloat)sprite[rapidjson::SizeType(2)].GetInt(),
-			(GLfloat)sprite[rapidjson::SizeType(3)].GetInt()
-		);
-
-		this->sprites.push_back( tempSprite );
-	}
-
-	return true;
-}
-
-bool agraph::SpriteSheet::init( agraph::Texture* texture, const std::vector< agraph::Rect > &clipData )
-{
 	return true;
 }
 
@@ -220,44 +161,145 @@ agraph::Sprite* agraph::SpriteSheet::getSprite( int index )
 }
 
 
+////////////////////////
+/// SpriteSheetFixed ///
+////////////////////////
+
+void agraph::SpriteSheetFixed::generateSprites( agraph::Texture* tex, GLuint tileWidth, GLuint tileHeight, GLint marginX, GLint marginY, GLuint startOffsetX, GLuint startOffsetY )
+{
+	cleanup();
+
+	this->tileWidth    = tileWidth;
+	this->tileHeight   = tileHeight;
+	this->marginX      = marginX;
+	this->marginY      = marginY;
+	this->startOffsetX = startOffsetX;
+	this->startOffsetY = startOffsetY;
+
+	GLuint texWidth  = tex->getWidth();
+	GLuint texHeight = tex->getHeight();
+	int columns = ( texWidth  - startOffsetX ) / (GLfloat)( getTileWidth()  + marginX );
+	int rows    = ( texHeight - startOffsetY ) / (GLfloat)( getTileHeight() + marginY );
+	for( int j = 0; j < rows; ++j )
+	{
+		for( int i = 0; i < columns; ++i )
+		{
+			sprites.push_back(new Sprite(
+				tex,
+				i * tileWidth  + i * marginX + startOffsetX,
+				j * tileHeight + j * marginY + startOffsetY,	
+				getTileWidth(),
+				getTileHeight()
+			));
+		}
+	}
+}
+
+GLuint agraph::SpriteSheetFixed::getTileWidth()
+{
+	return this->tileWidth;
+}
+
+GLuint agraph::SpriteSheetFixed::getTileHeight()
+{
+	return this->tileHeight;
+}
+
+GLint  agraph::SpriteSheetFixed::getMarginX()
+{
+	return this->marginX;
+}
+
+GLint  agraph::SpriteSheetFixed::getMarginY()
+{
+	return this->marginY;
+}
+
+GLuint agraph::SpriteSheetFixed::getStartOffsetX()
+{
+	return this->startOffsetX;
+}
+
+GLuint agraph::SpriteSheetFixed::getStartOffsetY()
+{
+	return this->startOffsetY;
+}
+
+
 //////////////////////////
 /// SpriteSheetFactory ///
 //////////////////////////
 
-// TODO: Not finished yet. Load the JSON file and read in the data.
 agraph::SpriteSheet* agraph::SpriteSheetFactory::loadSS( std::string spriteSheetPath )
 {
-	std::stringstream ss;
-	std::ifstream ifs;
-	ifs.open( spriteSheetPath.c_str(), std::ios::binary );
-	if( ifs.is_open() == false )
+	rapidjson::Document* doc = antic::parseJSON( spriteSheetPath );
+
+	rapidjson::Value &name = (*doc)["name"];
+	if( ssDict.find( name.GetString() ) != ssDict.end() )
+		return ssDict[ name.GetString() ];
+
+	agraph::SpriteSheet* spriteSheet = nullptr;;
+
+	rapidjson::Value &texture = (*doc)["texture"];
+	std::string texName = texture["name"].GetString();
+
+	agraph::Texture* tex = agraph::TextureFactory::loadTexture( texName, texture["path"].GetString() );
+	if( tex == nullptr )
 	{
-		printf("AGraph Error: Failed to open SpriteSheet at %s.\n", spriteSheetPath.c_str());
-		ifs.close();
+		printf("AGraph Error: Failed to load texture %s from SpriteSheet %s", texName.c_str(), name.GetString());
 		return nullptr;
 	}
 
-	ss << ifs.rdbuf();
-	ifs.close();
 
-	rapidjson::Document doc;
-	if( doc.Parse<0>(ss.str().c_str()).HasParseError() )
+
+	rapidjson::Value &sprites = (*doc)["sprites"];
+	if( sprites.IsArray() )
 	{
-		printf("AGraph Error: Failed to parse SpriteSheet at %s.\n", spriteSheetPath.c_str());
-		return nullptr;
+		spriteSheet = new agraph::SpriteSheet;
+		std::vector< agraph::Rect > clipData;
+
+		for( rapidjson::SizeType i = 0; i < sprites.Size(); ++i )
+		{
+			const rapidjson::Value &sprite = sprites[i];
+			agraph::Rect tempRect = {
+				(GLfloat)sprite[rapidjson::SizeType(0)].GetInt(),
+				(GLfloat)sprite[rapidjson::SizeType(1)].GetInt(),
+				(GLfloat)sprite[rapidjson::SizeType(2)].GetInt(),
+				(GLfloat)sprite[rapidjson::SizeType(3)].GetInt()
+			};
+
+			clipData.push_back( tempRect );
+		}
+
+		if( spriteSheet->init(tex, clipData) == false )
+		{
+			delete spriteSheet;
+			spriteSheet = nullptr;
+		}
+	}
+	else if( sprites.IsObject() )
+	{
+		GLuint tileWidth, tileHeight;
+
+		if( sprites.HasMember("tileWidth") && sprites.HasMember("tileHeight") )
+		{
+			tileWidth  = sprites["tileWidth"].GetInt();
+			tileHeight = sprites["tileHeight"].GetInt();			
+			
+			GLint  marginX=0, marginY=0;
+			if( sprites.HasMember("marginX") && sprites.HasMember("marginY") )
+			{
+				marginX = sprites["marginX"].GetInt();
+				marginY = sprites["marginY"].GetInt();
+			}
+			
+			agraph::SpriteSheetFixed* ssf = new agraph::SpriteSheetFixed;
+			ssf->generateSprites( tex, tileWidth, tileHeight, marginX, marginY );
+			spriteSheet = ssf;
+		}
 	}
 
-	std::string name = doc["name"].GetString();
-
-	if( ssDict.find( name ) != ssDict.end() )
-		return ssDict[ name ];
-
-	agraph::SpriteSheet* spriteSheet = new agraph::SpriteSheet;
-	if( spriteSheet->init( spriteSheetPath ) == false )
-	{
-		delete spriteSheet;
-		spriteSheet = nullptr;
-	}
+	delete doc;
 
 	return spriteSheet;
 }
