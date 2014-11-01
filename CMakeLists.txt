@@ -43,12 +43,15 @@ if( UNIX )
 endif( UNIX )
 
 
-# set( AGRAPH_LIBRARIES_COMMON GL GLU SDL2 )
-set( AGRAPH_LIBRARIES_COMMON GL GLU )
-
 
 # Add in the submodules.
 add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules )
+
+find_package( OpenGL REQUIRED )
+if( OPENGL_FOUND )
+	include_directories( ${OPENGL_INCLUDE_DIR} )
+	set( AGRAPH_LIBRARIES_COMMON ${OPENGL_LIBRARIES} )
+endif( OPENGL_FOUND )
 
 
 # Finds SDL2 library.
