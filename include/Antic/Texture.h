@@ -50,9 +50,10 @@ namespace agraph
 		void setBuffers();
 		void setWidth( GLuint width );
 		void setHeight( GLuint height );
-
+		/*
 		void setTextureWidth( GLuint width );
 		void setTextureHeight( GLuint height );
+		*/
 	};
 
 

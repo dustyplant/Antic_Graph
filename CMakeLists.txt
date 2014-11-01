@@ -22,7 +22,6 @@ include_directories( ${AGRAPH_INCLUDE_DIRS} )
 # So that the examples and tests can link to the Antic_Graph library once it is made.
 set( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 link_directories( ${PROJECT_BINARY_DIR}/lib )
-link_directories( ${PROJECT_SOURCE_DIR}/lib )
 
 # Compile and link the static Antic_Graph library.
 add_library( Antic_Graph STATIC

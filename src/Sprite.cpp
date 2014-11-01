@@ -46,6 +46,9 @@ void agraph::Sprite::setClipData( GLfloat x, GLfloat y, GLfloat w, GLfloat h )
 	GLuint screenWidth = agraph::getScreenWidth();
 	GLuint screenHeight = agraph::getScreenHeight();
 
+	GLfloat w2 = w/2.f;
+	GLfloat h2 = h/2.f;
+
 	GLfloat vbd[] = {
 		  w, 0.f, 0.f,
 		  w,   h, 0.f,
@@ -126,6 +129,8 @@ bool agraph::SpriteSheet::init( agraph::Texture* texture, std::vector< agraph::R
 	for( int i = 0; i < clipData.size(); ++i )
 		sprites.push_back( new agraph::Sprite( texture, clipData[i] ) );
 
+	this->texture = texture;
+
 	return true;
 }
 
@@ -171,8 +176,8 @@ void agraph::SpriteSheetFixed::generateSprites( agraph::Texture* tex, GLuint til
 
 	this->tileWidth    = tileWidth;
 	this->tileHeight   = tileHeight;
-	this->spacingX      = spacingX;
-	this->spacingY      = spacingY;
+	this->spacingX     = spacingX;
+	this->spacingY     = spacingY;
 	this->startOffsetX = startOffsetX;
 	this->startOffsetY = startOffsetY;
 
@@ -193,6 +198,8 @@ void agraph::SpriteSheetFixed::generateSprites( agraph::Texture* tex, GLuint til
 			));
 		}
 	}
+
+	this->texture = tex;
 }
 
 GLuint agraph::SpriteSheetFixed::getTileWidth()
@@ -249,7 +256,6 @@ agraph::SpriteSheet* agraph::SpriteSheetFactory::loadSS( std::string spriteSheet
 		printf("AGraph Error: Failed to load texture %s from SpriteSheet %s", texName.c_str(), name.GetString());
 		return nullptr;
 	}
-
 
 
 	rapidjson::Value &sprites = (*doc)["sprites"];

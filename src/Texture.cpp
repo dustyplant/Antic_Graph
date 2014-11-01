@@ -243,9 +243,6 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 
 void agraph::Texture::setBuffers()
 {
-	GLfloat w2 = (GLfloat)getWidth()/2.f;
-	GLfloat h2 = (GLfloat)getHeight()/2.f;
-
 	GLuint screenWidth = agraph::getScreenWidth();
 	GLuint screenHeight = agraph::getScreenHeight();
 

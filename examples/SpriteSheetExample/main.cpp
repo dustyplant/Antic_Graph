@@ -11,7 +11,7 @@ int main( int argc, char *argv[] )
 	if( agraph::initAGraph("Example7", 1024, 768) == false )
 		exit( EXIT_FAILURE );
 
-	// Loads the Transforming texture. This is the skyscraper picture.
+	// Loads the Transforming texture.
 	agraph::Texture* tex = agraph::TextureFactory::loadTexture("Transforming", std::string(AGRAPH_RES_PATH) + "exterior-parallaxBG1.png");
 
 	// Loads the sprite sheet of Elisa.
@@ -33,7 +33,7 @@ int main( int argc, char *argv[] )
 				quit = true;
 
 
-		// Renders the skyscraper texture.
+		// Renders the Transforming texture.
 		tex->render();
 
 		// Loop for the animation.
