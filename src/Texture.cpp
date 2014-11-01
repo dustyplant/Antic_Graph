@@ -103,6 +103,9 @@ bool agraph::Texture::init( std::string texturePath )
 		// If no errors loading texture, generate the VBOs.
 		setBuffers();
 
+		glGenVertexArrays( 1, &vertexArrayID );
+		glBindVertexArray( vertexArrayID );
+
 		glGenBuffers( 1, &vertexBufferID );
 		glBindBuffer( GL_ARRAY_BUFFER, vertexBufferID );
 		glBufferData(
@@ -132,6 +135,12 @@ void agraph::Texture::cleanup()
 	{
 		glDeleteTextures( 1, &textureID );
 		textureID = 0;
+	}
+
+	if( vertexArrayID != 0 )
+	{
+		glDeleteVertexArrays( 1, &vertexArrayID );
+		vertexArrayID = 0;
 	}
 
 	if( vertexBufferID != 0 )

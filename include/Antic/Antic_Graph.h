@@ -15,6 +15,12 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef __APPLE__
+	#define glGenVertexArrays glGenVertexArraysAPPLE
+	#define glBindVertexArrays glBindVertexArraysAPPLE
+	#define glDeleteVertexArrays glDeleteVertexArraysAPPLE
+#endif
+
 namespace agraph {
 	/// Pointer to the SDL2 Window. This is what everything is being drawn to.
 	extern SDL_Window *window;

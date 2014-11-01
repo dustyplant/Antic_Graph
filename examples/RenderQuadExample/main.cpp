@@ -29,6 +29,10 @@ int main( int argc, char* argv[] )
 	if( programID == 0 )
 		exit( EXIT_FAILURE );
 
+	GLuint vertexArrayID = 0;
+	glGenVertexArrays( 1, &vertexArrayID );
+	glBindVertexArray( vertexArrayID );
+
 	// Generates and binds the vertex buffer, then loads it with the vertex buffer data.
 	// This is basic OpenGL not wrapped by the Antic_Graph library.
 	GLuint vertexBufferID;
@@ -90,6 +94,9 @@ int main( int argc, char* argv[] )
 		// Renders everything to the screen for this frame.
 		agraph::renderDone();
 	}
+
+	if( vertexArrayID != 0 )
+		glDeleteVertexArrays( 1, &vertexArrayID );
 
 	// Frees the vertex buffer object.
 	if( vertexBufferID != 0 )

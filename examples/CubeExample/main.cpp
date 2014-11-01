@@ -2,6 +2,7 @@
 #include <Antic/Shader.h>
 #include <glm/glm.hpp>
 
+GLuint vertexArrayID = 0;
 GLuint vertexBuffer  = 0;
 GLuint colorBuffer   = 0;
 SDL_Event event;
@@ -116,6 +117,11 @@ int main( int argc, char* argv[] ) {
 	// Loads the custom shaders using the ShaderFactory static class.
 	agraph::Shader* shader = agraph::ShaderFactory::loadShaders("Shaders/VertexShader.glsl", "Shaders/FragmentShader.glsl");
 
+	// Generates the vertex array object;
+	GLuint vertexArrayID = 0;
+	glGenVertexArrays( 1, &vertexArrayID );
+	glBindVertexArray( vertexArrayID );
+
 	// Generates and binds the vertex buffer, then loads it with the vertex buffer data.
 	// This is basic OpenGL not wrapped by the Antic_Graph library.
 	glGenBuffers( 1, &vertexBuffer );
@@ -151,6 +157,10 @@ int main( int argc, char* argv[] ) {
 		// Renders the frame to the window.
 		agraph::renderDone();
 	}
+
+	// Deallocates the vertex array object.
+	if( vertexArrayID != 0 )
+		glDeleteVertexArrays( 1, &vertexArrayID );
 
 	// Deallocates the vertex buffer object.
 	if( vertexBuffer != 0 )
