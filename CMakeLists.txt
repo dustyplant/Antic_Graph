@@ -4,6 +4,7 @@ project( Antic_Graph )
 # Flags for C++11 and for better debugging output.
 set( CMAKE_CXX_FLAGS " -g --std=c++11 " )
 
+set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 set( AGRAPH_RES_PATH "${PROJECT_SOURCE_DIR}/res/" CACHE STRING "Path to the Antic_Graph res folder." )
 
 set( AGRAPH_INCLUDE_DIRS 
@@ -38,14 +39,15 @@ if( WIN32 )
 	set( AGRAPH_LIBRARIES_BASE ${AGRAPH_LIBRARIES_BASE} mingw32 glew32 SDL2main )
 endif( WIN32 )
 
-if( UNIX )
-	set( AGRAPH_LIBRARIES_BASE ${AGRAPH_LIBRARIES_BASE} GLEW )
-endif( UNIX )
-
-
 
 # Add in the submodules.
 add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules )
+
+find_package( GLEW REQUIRED )
+if( GLEW_FOUND )
+	include_directories( ${GLEW_INCLUDE_DIR} )
+	set( AGRAPH_LIBRARIES_BASE ${AGRAPH_LIBRARIES_BASE} ${GLEW_LIBRARIES} )
+endif( GLEW_FOUND )
 
 find_package( OpenGL REQUIRED )
 if( OPENGL_FOUND )
