@@ -3,18 +3,18 @@
 
 // Vertex buffer Data for the texture.
 const GLfloat vertexData[] = {
-	 0.f,  0.f, 0.0f,
-	 0.f, 50.f, 0.0f,
-	50.f, 50.f, 0.0f,
-	50.f,  0.f, 0.0f
+	-0.125f, -0.125f, 0.0f,
+	-0.125f,  0.125f, 0.0f,
+	 0.125f,  0.125f, 0.0f,
+	 0.125f, -0.125f, 0.0f
 };
 
 // Color buffer data for the texture.
 const GLfloat colorData[] = {
-	1.f, 0.25f, 1.f,
-	1.f, 0.25f, 1.f,
-	1.f, 0.25f, 1.f,
-	1.f, 0.25f, 1.f
+	0.83, 0.99, 0.76, 
+	0.95, 0.50, 0.69, 
+	0.65, 0.49, 0.89, 
+	0.09, 0.04, 0.16, 
 };
 
 int main( int argc, char* argv[] )
@@ -62,7 +62,7 @@ int main( int argc, char* argv[] )
 		glUseProgram( programID );
 
 		// Multiply matrices to get the MVC (Model, View, Projection matrix).
-		glm::mat4 MVP = agraph::ProjectionOrtho * agraph::View * glm::translate(agraph::Model, glm::vec3(10.f, 10.f, 0.0f));
+		glm::mat4 MVP = agraph::Projection * agraph::View * glm::translate(agraph::Model, glm::vec3(0.5f, -0.5f, 0.0f));
 		
 		// Get the location of the MVP variable in the shader to later pass the MVP matrix data to it.
 		GLuint MatrixID = glGetUniformLocation( programID, "MVP" );
@@ -85,7 +85,7 @@ int main( int argc, char* argv[] )
 		glVertexAttribPointer( vertexColor, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 
 		// This line renders the data passed to the shader.
-		glDrawArrays( GL_TRIANGLE_FAN, 0, 3*4 );
+		glDrawArrays( GL_QUADS, 0, 3*4 );
 
 		// Closes connections to the variables in the shader.
 		glDisableVertexAttribArray( vertexPosition );

@@ -151,8 +151,7 @@ void agraph::setCamera( glm::vec3 cameraLocation, glm::vec3 lookingAt, glm::vec3
 
 void agraph::setPerspective( GLfloat fov, GLfloat aspectRatio )
 {
-	//agraph::Projection = glm::perspective( (float)(fov * M_PI / 180.f), (GLfloat)getScreenWidth() / (GLfloat)getScreenHeight(), 0.1f, 1000.f );
-	agraph::Projection = glm::perspective( (float)(fov * M_PI / 180.f), aspectRatio, 0.1f, 1000.f );
+	agraph::Projection = glm::perspective( (float)(fov * M_PI / 180.f), aspectRatio, 0.1f, 1000000.f );
 }
 
 void agraph::setOrtho( GLfloat width, GLfloat height )
@@ -179,7 +178,9 @@ void agraph::translate( GLfloat x, GLfloat y, GLfloat z )
 
 void agraph::rotate( GLfloat angle, GLfloat x, GLfloat y, GLfloat z )
 {
+	agraph::scale( (GLfloat)getScreenWidth(), (GLfloat)getScreenHeight(), 1.f );
 	agraph::Model = glm::rotate( agraph::Model, (float)(angle * M_PI / 180.f), glm::vec3(x,y,z) );
+	agraph::scale( 1/(GLfloat)getScreenWidth(), 1/(GLfloat)getScreenHeight(), 1.f );
 }
 
 void agraph::rotate2D( GLfloat angle )

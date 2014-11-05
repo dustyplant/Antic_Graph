@@ -24,6 +24,9 @@ int main( int argc, char *argv[] )
 	// Holds the current index of the sprite sheet for the animation of Elisa running.
 	int index = startingSprite-1;
 
+	// Angle to rotate the tetxure and the Elisa spritesheet.
+	GLfloat angle = 0.f;
+
 	bool quit = false;
 	SDL_Event event;
 	while( quit == false )
@@ -32,6 +35,19 @@ int main( int argc, char *argv[] )
 			if( event.type == SDL_QUIT )
 				quit = true;
 
+		// Increments the angle to continue the rotation.
+		angle += 1;
+		if( angle >= 360.f )
+			angle = 0.f;
+
+		// Loads the identity.
+		agraph::loadIdentity();
+
+		// Translates the texture and the spriteshet to the away from the origin.
+		agraph::translate( 250, 250, 0 );
+
+		// Rotates the Model matrix by the given angle.
+		agraph::rotate( angle, 1.f, 0.f, 0.f );
 
 		// Renders the Transforming texture.
 		tex->render();
@@ -41,6 +57,10 @@ int main( int argc, char *argv[] )
 		if( index > endingSprite )
 			index = startingSprite;
 
+
+		// Moves the Elisa SpriteSheet object.
+		agraph::translate(50.f, 50.f, 0.001f);
+		
 		// Renders the nth sprite of the sprite sheet.
 		elisa->render(index);
 

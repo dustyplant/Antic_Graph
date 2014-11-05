@@ -243,7 +243,8 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 	glVertexAttribPointer( vertexUVID, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 
 	// This is where you actually render the texture. 12 is 3 GLfloats times 4 vertices.
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexBufferData.size() );
+	//glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexBufferData.size() );
+	glDrawArrays( GL_QUADS, 0, vertexBufferData.size() );
 
 	// Disable the Vertex Attribute Arrays because we are done with them now.
 	glDisableVertexAttribArray( vertexPositionID );
@@ -252,9 +253,25 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 
 void agraph::Texture::setBuffers()
 {
-	GLuint screenWidth = agraph::getScreenWidth();
-	GLuint screenHeight = agraph::getScreenHeight();
+	GLfloat w2 = this->textureWidth/2.f;
+	GLfloat h2 = this->textureHeight/2.f;
 
+	GLfloat vbd[] = {
+		-w2, -h2, 0.f,
+		 w2, -h2, 0.f,
+		 w2,  h2, 0.f,
+		-w2,  h2, 0.f,
+	};
+
+	static GLfloat uvbd[] = {
+		0.f, 0.f, 0.f,
+		1.f, 0.f, 0.f,
+		1.f, 1.f, 0.f,
+	    0.f, 1.f, 0.f,
+	};
+	
+	/*
+	// This block is for drawing from the top left corner.
 	GLfloat vbd[] = {
 		(GLfloat)textureWidth, 0.f, 0.f,
 		(GLfloat)textureWidth, (GLfloat)textureHeight, 0.f,
@@ -262,22 +279,13 @@ void agraph::Texture::setBuffers()
 		0.f, (GLfloat)textureHeight, 0.f,
 	};
 
-	/*
-	// For use with textures enlarged to power of 2 sizes.
-	static GLfloat uvbd[] = {
-		(GLfloat)imageWidth/textureWidth, 0.f, 0.f,
-		(GLfloat)imageWidth/textureWidth, (GLfloat)imageHeight/textureHeight, 0.f,
-		0.f, 0.f, 0.f,
-	    0.f, (GLfloat)imageHeight/textureHeight, 0.f,
-	};
-	*/
-
 	static GLfloat uvbd[] = {
 		1.f, 0.f, 0.f,
 		1.f, 1.f, 0.f,
 		0.f, 0.f, 0.f,
 	    0.f, 1.f, 0.f,
 	};
+	*/
 
 	vertexBufferData.clear();
 	vertexBufferData.insert( vertexBufferData.end(), vbd, vbd +sizeof(vbd)/sizeof(GLfloat) );
