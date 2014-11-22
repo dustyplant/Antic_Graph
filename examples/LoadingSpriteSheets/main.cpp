@@ -16,14 +16,10 @@ int main( int argc, char* argv[] )
 		exit( EXIT_FAILURE );	
 	}
 
-	SDL_Event event;
 	int i = 0;
-	bool quit = false;
-	while( quit == false )
+	while( glfwWindowShouldClose( agraph::window ) == false )
 	{
-		while( SDL_PollEvent( &event ) )
-			if( event.type == SDL_QUIT )
-				quit = true;
+		glfwPollEvents();
 
 		++i;
 		if( i >= 7 )

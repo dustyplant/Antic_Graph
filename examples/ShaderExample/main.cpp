@@ -4,6 +4,9 @@
 
 int main( int argc, char* argv[] )
 {
+	int width = 1024;
+	int height = 768;
+
 	if( agraph::initAGraph("Shader Example", 1024, 768) == false )
 		exit( EXIT_FAILURE );
 
@@ -19,16 +22,12 @@ int main( int argc, char* argv[] )
 	if( programID == nullptr )
 		exit( EXIT_FAILURE );
 
-	SDL_Event event;
-	bool quit = false;
-	while( quit == false )
+	while( glfwWindowShouldClose( agraph::window ) == false )
 	{
-		while( SDL_PollEvent( &event ) )
-			if( event.type == SDL_QUIT )
-				quit = true;
+		glfwPollEvents();
 
 		// Renders the texture using the given shader.
-		tex->render(0.f, 0.f, programID);
+		tex->render( width/2.f, height/2.f, programID);
 
 		// Renders the frame to the screen.
 		agraph::renderDone();

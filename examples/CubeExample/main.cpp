@@ -5,7 +5,7 @@
 GLuint vertexArrayID = 0;
 GLuint vertexBuffer  = 0;
 GLuint colorBuffer   = 0;
-SDL_Event event;
+
 /**
  * @brief Draws a Quad or Rect with the given dimensions and location.
  * @details The quad drawn will be rotating along the center point, not any of the corners.
@@ -138,12 +138,9 @@ int main( int argc, char* argv[] ) {
 	// The camera is at location (4,3,3) in the world coordinates and is looking at (0,0,0) in world coordinates.
 	agraph::setCamera( glm::vec3(4,3,3), glm::vec3(0,0,0) );
 
-	bool quit = false;
-	while( quit == false ) {
-		while( SDL_PollEvent( &event ) ) {
-			if( event.type == SDL_QUIT ) 
-				quit = true;
-		}
+	while( glfwWindowShouldClose( agraph::window ) == false )
+	{
+		glfwPollEvents();
 
 		// Binds the shader.
 		shader->bind();

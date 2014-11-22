@@ -50,13 +50,9 @@ int main( int argc, char* argv[] )
 	// Loads the identity for the orthographic projection.
 	agraph::loadIdentity();
 
-	SDL_Event event;
-	bool quit = false;
-	while( quit == false )
+	while( glfwWindowShouldClose( agraph::window ) == false )
 	{
-		while( SDL_PollEvent( &event ) )
-			if( event.type == SDL_QUIT )
-				quit = true;
+		glfwPollEvents();
 
 		// Loads the shader.
 		glUseProgram( programID );

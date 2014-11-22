@@ -27,13 +27,9 @@ int main( int argc, char *argv[] )
 	// Angle to rotate the tetxure and the Elisa spritesheet.
 	GLfloat angle = 0.f;
 
-	bool quit = false;
-	SDL_Event event;
-	while( quit == false )
+	while( glfwWindowShouldClose( agraph::window ) == false )
 	{
-		while( SDL_PollEvent( &event ) )
-			if( event.type == SDL_QUIT )
-				quit = true;
+		glfwPollEvents();
 
 		// Increments the angle to continue the rotation.
 		angle += 1;

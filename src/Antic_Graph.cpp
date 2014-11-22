@@ -11,8 +11,10 @@
 #include <math.h>
 #include <stack>
 
-SDL_GLContext agraph::ctx;
-SDL_Window* agraph::window        = nullptr;
+//SDL_GLContext agraph::ctx;
+//SDL_Window* agraph::window        = nullptr;
+GLFWwindow* agraph::window        = nullptr;
+
 glm::mat4 agraph::Model           = glm::mat4( 1.0f );
 glm::mat4 agraph::ModelScale 	  = glm::mat4( 1.0f );
 glm::mat4 agraph::Projection;
@@ -26,12 +28,14 @@ GLuint screenHeight;
 
 bool agraph::initAGraph( std::string title, int width, int height )
 {
-	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
+	//if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
+	if( glfwInit() == false )
 	{
 		printf("AGraph Error: Failed to initialize SDL2.\n");
 		return cleanup();
 	}
 	// Set the version of OpenGL to use as version 2.1.
+	/*
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
 
@@ -43,8 +47,21 @@ bool agraph::initAGraph( std::string title, int width, int height )
 	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
 	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
+	*/
 
-	// Create SDL2 Window
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2 );
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
+	glfwWindowHint( GLFW_SAMPLES, 4 );
+	
+	#ifdef __APPLE__
+		glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
+	#endif
+	/*
+	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+	*/
+
+	// Create SDL2 Windo
+	/*
 	window = SDL_CreateWindow(
 		title.c_str(),
 		SDL_WINDOWPOS_CENTERED,
@@ -53,6 +70,8 @@ bool agraph::initAGraph( std::string title, int width, int height )
 		height,
 		SDL_WINDOW_OPENGL
 	);
+	*/
+	window = glfwCreateWindow( 640, 480, "Things", nullptr, nullptr );
 
 	if( window == nullptr )
 	{
@@ -61,7 +80,8 @@ bool agraph::initAGraph( std::string title, int width, int height )
 	}
 
 	// Create OpenGL context
-	ctx = SDL_GL_CreateContext( window );
+	//ctx = SDL_GL_CreateContext( window );
+	glfwMakeContextCurrent( window );
 
 	// Initialize GLEW and print any errors.
 	GLenum error = glewInit();
@@ -123,8 +143,11 @@ bool agraph::cleanup()
 	// Closes the window.
 	if( window != nullptr )
 	{
+		/*
 		SDL_GL_DeleteContext( ctx );
 		SDL_DestroyWindow( window );
+		*/
+		glfwDestroyWindow( window );
 	}
 
 	agraph::TextureFactory::cleanup();
@@ -132,7 +155,8 @@ bool agraph::cleanup()
 	agraph::SpriteSheetFactory::cleanup();
 
 	// Closes SDL2.
-	SDL_Quit();
+	// SDL_Quit();
+	glfwTerminate();
 
 	// This is just to clean up code.
 	return false;
@@ -140,7 +164,8 @@ bool agraph::cleanup()
 
 void agraph::renderDone()
 {
-	SDL_GL_SwapWindow( window );
+	//SDL_GL_SwapWindow( window );
+	glfwSwapBuffers( window );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
@@ -162,7 +187,8 @@ void agraph::setOrtho( GLfloat width, GLfloat height )
 void agraph::scaleOrtho( GLfloat scaleX, GLfloat scaleY )
 {
 	int w,h;
-	SDL_GetWindowSize( agraph::window, &w, &h );
+	//SDL_GetWindowSize( agraph::window, &w, &h );
+	glfwGetWindowSize( agraph::window, &w, &h );
 	setOrtho( w * scaleX, h * scaleY );
 }
 
