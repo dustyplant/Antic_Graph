@@ -46,13 +46,15 @@ add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules )
 find_package( PkgConfig REQUIRED )
 pkg_search_module( GLFW glfw3 )
 
-if( ${GLFW_FOUND})
+if( ${GLFW_FOUND} )
 	include_directories( ${GLFW_INCLUDE_DIRS} )
+	set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} ${GLFW_STATIC_LIBRARIES} )
 else()
+	add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules/glfw )
 	include_directories( ${PROJECT_SOURCE_DIR}/submodules/glfw/include )
+	set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} glfw3 ${GLFW_LIBRARIES} )
 endif()
 
-set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} ${GLFW_STATIC_LIBRARIES} )
 
 
 find_package( GLEW REQUIRED )
