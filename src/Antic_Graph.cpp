@@ -53,13 +53,6 @@ bool agraph::initAGraph( std::string title, int width, int height )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2 );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
 	glfwWindowHint( GLFW_SAMPLES, 4 );
-	
-	#ifdef __APPLE__
-		//glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
-	#endif
-	/*
-	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-	*/
 
 	// Create SDL2 Windo
 	/*
@@ -72,7 +65,7 @@ bool agraph::initAGraph( std::string title, int width, int height )
 		SDL_WINDOW_OPENGL
 	);
 	*/
-	window = glfwCreateWindow( 640, 480, "Things", nullptr, nullptr );
+	window = glfwCreateWindow( width, height, title.c_str(), nullptr, nullptr );
 
 	if( window == nullptr )
 	{
