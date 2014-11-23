@@ -4,6 +4,3 @@
 [submodule "submodules/glfw"]
 	path = submodules/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "submodules/tmxparser"]
-	path = submodules/tmxparser
-	url = https://github.com/shanesatterfield/tmxparser.git
