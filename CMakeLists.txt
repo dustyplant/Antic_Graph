@@ -2,7 +2,8 @@ cmake_minimum_required( VERSION 3.0 )
 project( Antic_Graph )
 
 # Flags for C++11 and for better debugging output.
-set( CMAKE_CXX_FLAGS " -g --std=c++11 " )
+add_compile_options( --std=c++11 )
+add_compile_options( -g )
 
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 set( AGRAPH_RES_PATH "${PROJECT_SOURCE_DIR}/res/" CACHE STRING "Path to the Antic_Graph res folder." )
