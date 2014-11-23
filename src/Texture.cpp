@@ -80,7 +80,7 @@ bool agraph::Texture::init( std::string texturePath )
 			// GL_LINEAR gets the average of the 4 closest pixels to approximate the proper color.
 			// GL_NEAREST just picks the closest pixel to that location and uses that. Not particularly faster. Not worth using.
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
 			// This describes what is drawn if the image is too large.
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
@@ -102,6 +102,9 @@ bool agraph::Texture::init( std::string texturePath )
 	{
 		// If no errors loading texture, generate the VBOs.
 		setBuffers();
+
+		glGenVertexArrays( 1, &vertexArrayID );
+		glBindVertexArray( vertexArrayID );
 
 		glGenBuffers( 1, &vertexBufferID );
 		glBindBuffer( GL_ARRAY_BUFFER, vertexBufferID );
@@ -132,6 +135,12 @@ void agraph::Texture::cleanup()
 	{
 		glDeleteTextures( 1, &textureID );
 		textureID = 0;
+	}
+
+	if( vertexArrayID != 0 )
+	{
+		glDeleteVertexArrays( 1, &vertexArrayID );
+		vertexArrayID = 0;
 	}
 
 	if( vertexBufferID != 0 )
@@ -234,7 +243,8 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 	glVertexAttribPointer( vertexUVID, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 
 	// This is where you actually render the texture. 12 is 3 GLfloats times 4 vertices.
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexBufferData.size() );
+	//glDrawArrays( GL_TRIANGLE_STRIP, 0, vertexBufferData.size() );
+	glDrawArrays( GL_QUADS, 0, vertexBufferData.size() );
 
 	// Disable the Vertex Attribute Arrays because we are done with them now.
 	glDisableVertexAttribArray( vertexPositionID );
@@ -243,9 +253,25 @@ void agraph::Texture::render( GLfloat x, GLfloat y, GLuint programID, GLuint ver
 
 void agraph::Texture::setBuffers()
 {
-	GLuint screenWidth = agraph::getScreenWidth();
-	GLuint screenHeight = agraph::getScreenHeight();
+	GLfloat w2 = this->textureWidth/2.f;
+	GLfloat h2 = this->textureHeight/2.f;
 
+	GLfloat vbd[] = {
+		-w2, -h2, 0.f,
+		 w2, -h2, 0.f,
+		 w2,  h2, 0.f,
+		-w2,  h2, 0.f,
+	};
+
+	static GLfloat uvbd[] = {
+		0.f, 0.f, 0.f,
+		1.f, 0.f, 0.f,
+		1.f, 1.f, 0.f,
+	    0.f, 1.f, 0.f,
+	};
+	
+	/*
+	// This block is for drawing from the top left corner.
 	GLfloat vbd[] = {
 		(GLfloat)textureWidth, 0.f, 0.f,
 		(GLfloat)textureWidth, (GLfloat)textureHeight, 0.f,
@@ -253,22 +279,13 @@ void agraph::Texture::setBuffers()
 		0.f, (GLfloat)textureHeight, 0.f,
 	};
 
-	/*
-	// For use with textures enlarged to power of 2 sizes.
-	static GLfloat uvbd[] = {
-		(GLfloat)imageWidth/textureWidth, 0.f, 0.f,
-		(GLfloat)imageWidth/textureWidth, (GLfloat)imageHeight/textureHeight, 0.f,
-		0.f, 0.f, 0.f,
-	    0.f, (GLfloat)imageHeight/textureHeight, 0.f,
-	};
-	*/
-
 	static GLfloat uvbd[] = {
 		1.f, 0.f, 0.f,
 		1.f, 1.f, 0.f,
 		0.f, 0.f, 0.f,
 	    0.f, 1.f, 0.f,
 	};
+	*/
 
 	vertexBufferData.clear();
 	vertexBufferData.insert( vertexBufferData.end(), vbd, vbd +sizeof(vbd)/sizeof(GLfloat) );

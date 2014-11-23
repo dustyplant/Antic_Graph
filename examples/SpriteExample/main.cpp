@@ -21,13 +21,9 @@ int main( int argc, char* argv[] )
 
 	agraph::Rect clipData = sprite->getClipData();
 
-	SDL_Event event;
-	bool quit = false;
-	while( quit == false )
+	while( glfwWindowShouldClose( agraph::window ) == false )
 	{
-		while( SDL_PollEvent( &event ) )
-			if( event.type == SDL_QUIT )
-				quit = true;
+		glfwPollEvents();
 
 		// Renders the sprite at the given x,y location.
 		sprite->render( agraph::getScreenWidth() - clipData.w, agraph::getScreenHeight() - clipData.h );

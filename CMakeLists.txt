@@ -44,6 +44,20 @@ endif( WIN32 )
 # Add in the submodules.
 add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules )
 
+find_package( PkgConfig REQUIRED )
+pkg_search_module( GLFW glfw3 )
+
+if( ${GLFW_FOUND} )
+	include_directories( ${GLFW_INCLUDE_DIRS} )
+	set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} ${GLFW_STATIC_LIBRARIES} )
+else()
+	add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules/glfw )
+	include_directories( ${PROJECT_SOURCE_DIR}/submodules/glfw/include )
+	set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} glfw3 ${GLFW_LIBRARIES} )
+endif()
+
+
+
 find_package( GLEW REQUIRED )
 if( GLEW_FOUND )
 	include_directories( ${GLEW_INCLUDE_DIR} )
@@ -58,10 +72,10 @@ endif( OPENGL_FOUND )
 
 
 # Finds SDL2 library.
-include(FindPkgConfig)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-include_directories( ${SDL2_INCLUDE_DIRS} )
-set( AGRAPH_LIBRARIES_COMMON ${AGRAPH_LIBRARIES_COMMON} ${SDL2_LIBRARIES} )
+# include(FindPkgConfig)
+# PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+# include_directories( ${SDL2_INCLUDE_DIRS} )
+# set( AGRAPH_LIBRARIES_COMMON ${AGRAPH_LIBRARIES_COMMON} ${SDL2_LIBRARIES} )
 
 
 # Finds the DevIL (Developer Image Library) library.

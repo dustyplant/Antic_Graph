@@ -43,34 +43,38 @@ void agraph::Sprite::setClipData( GLfloat x, GLfloat y, GLfloat w, GLfloat h )
 	GLuint texWidth  = getTexture()->getWidth();
 	GLuint texHeight = getTexture()->getHeight();
 
-	GLuint screenWidth = agraph::getScreenWidth();
-	GLuint screenHeight = agraph::getScreenHeight();
-
 	GLfloat w2 = w/2.f;
 	GLfloat h2 = h/2.f;
 
+	GLfloat vbd[] = {
+		-w2, -h2, 0.f,
+		 w2, -h2, 0.f,
+		 w2,  h2, 0.f,
+		-w2,  h2, 0.f,
+	};
+
+	GLfloat uvbd[] = {
+		 x   /texWidth,  y   /texHeight, 0.f,
+		(x+w)/texWidth,  y   /texHeight, 0.f,
+		(x+w)/texWidth, (y+h)/texHeight, 0.f,
+	     x   /texWidth,	(y+h)/texHeight, 0.f,
+	};
+
+	/*
 	GLfloat vbd[] = {
 		  w, 0.f, 0.f,
 		  w,   h, 0.f,
 		0.f, 0.f, 0.f,
 		0.f,   h, 0.f,
 	};
-
-	/*
-	GLfloat vbd[] = {
-		w/screenWidth, 		0.f, 			0.f,
-		w/screenWidth,    	h/screenHeight, 0.f,
-		0.f, 				0.f, 			0.f,
-		0.f,   				h/screenHeight, 0.f,
-	};
-	*/
-
+	
 	GLfloat uvbd[] = {
 		(x+w)/texWidth,  y   /texHeight, 0.f,
 		(x+w)/texWidth, (y+h)/texHeight, 0.f,
 		 x   /texWidth,  y   /texHeight, 0.f,
 	     x   /texWidth,	(y+h)/texHeight, 0.f,
 	};
+	*/
 
 	cleanup();
 

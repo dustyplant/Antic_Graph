@@ -4,7 +4,8 @@
 #define GLM_FORCE_RADIANS
 
 #include <GL/glew.h>
-#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdio.h>
@@ -15,12 +16,19 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef __APPLE__
+	#define glGenVertexArrays glGenVertexArraysAPPLE
+	#define glBindVertexArrays glBindVertexArraysAPPLE
+	#define glDeleteVertexArrays glDeleteVertexArraysAPPLE
+#endif
+
 namespace agraph {
 	/// Pointer to the SDL2 Window. This is what everything is being drawn to.
-	extern SDL_Window *window;
+	//extern SDL_Window *window;
+	extern GLFWwindow *window;
 
 	/// OpenGL Context object. It is created from the SDL2 window object.
-	extern SDL_GLContext ctx;
+	//extern SDL_GLContext ctx;
 
 	/// Projection Matrix
 	extern glm::mat4 Projection;
