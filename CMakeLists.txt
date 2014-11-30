@@ -2,7 +2,8 @@ cmake_minimum_required( VERSION 3.0 )
 project( Antic_Graph )
 
 # Flags for C++11 and for better debugging output.
-set( CMAKE_CXX_FLAGS " -g --std=c++11 " )
+add_compile_options( --std=c++11 )
+add_compile_options( -g )
 
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 set( AGRAPH_RES_PATH "${PROJECT_SOURCE_DIR}/res/" CACHE STRING "Path to the Antic_Graph res folder." )
@@ -21,7 +22,7 @@ set( AGRAPH_INCLUDE_DIRS
 include_directories( ${AGRAPH_INCLUDE_DIRS} )
 
 # So that the examples and tests can link to the Antic_Graph library once it is made.
-set( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+set( LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib )
 link_directories( ${PROJECT_BINARY_DIR}/lib )
 
 # Compile and link the static Antic_Graph library.
@@ -43,15 +44,17 @@ endif( WIN32 )
 # Add in the submodules.
 add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules )
 
-find_package( PkgConfig REQUIRED )
-pkg_search_module( GLFW glfw3 )
+find_package( PkgConfig )
+if( ${PKGCONFIG_FOUND} )
+	pkg_search_module( GLFW glfw3 )
+endif()
 
 if( ${GLFW_FOUND} )
 	include_directories( ${GLFW_INCLUDE_DIRS} )
 	set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} ${GLFW_STATIC_LIBRARIES} )
 else()
-	add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules/glfw )
 	include_directories( ${PROJECT_SOURCE_DIR}/submodules/glfw/include )
+	add_subdirectory( ${PROJECT_SOURCE_DIR}/submodules/glfw )
 	set( AGRAPH_LIBRARIES_BASE ${AGRPH_LIBRARIES_BASE} glfw3 ${GLFW_LIBRARIES} )
 endif()
 
