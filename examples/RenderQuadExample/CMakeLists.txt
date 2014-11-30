@@ -6,4 +6,4 @@ project( RenderQuadExample )
 
 add_executable( RenderQuadExample main.cpp )
 
-target_link_libraries( RenderQuadExample ${AGRAPH_LIBRARIES} IL ILU )
+target_link_libraries( RenderQuadExample ${AGRAPH_LIBRARIES} )

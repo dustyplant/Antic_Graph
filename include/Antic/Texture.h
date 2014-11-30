@@ -41,7 +41,7 @@ namespace agraph
 		std::vector< GLfloat > vertexBufferData;
 		std::vector< GLfloat >     uvBufferData;
 
-		GLuint vertexArrayID  = 0;
+		//GLuint vertexArrayID  = 0;
 		GLuint vertexBufferID = 0;
 		GLuint uvBufferID     = 0;
 
