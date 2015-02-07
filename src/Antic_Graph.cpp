@@ -26,7 +26,7 @@ std::stack<glm::mat4> matrixStack;
 GLuint screenWidth;
 GLuint screenHeight;
 
-bool agraph::initAGraph( std::string title, int width, int height )
+bool agraph::initAGraph( std::string title, int width, int height, bool fullscreen )
 {
 	//if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
 	if( glfwInit() == false )
@@ -65,7 +65,11 @@ bool agraph::initAGraph( std::string title, int width, int height )
 		SDL_WINDOW_OPENGL
 	);
 	*/
-	window = glfwCreateWindow( width, height, title.c_str(), nullptr, nullptr );
+	GLFWmonitor* monitor = nullptr;
+	if( fullscreen )
+		monitor = glfwGetPrimaryMonitor();
+
+	window = glfwCreateWindow( width, height, title.c_str(), monitor, nullptr );
 
 	if( window == nullptr )
 	{

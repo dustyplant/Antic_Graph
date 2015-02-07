@@ -51,7 +51,7 @@ namespace agraph {
 	 * 
 	 * @return Whether or not the initialization was successful.
 	 */
-	bool initAGraph( std::string title="", int width=640, int height=480 );
+	bool initAGraph( std::string title="", int width=640, int height=480, bool fullscreen=false );
 
 	/**
 	 * @brief Cleans up and closes everything that Antic_Graph used or initialized.
